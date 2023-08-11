@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sayısal Loto Oyunu</title>
+    <style>
+        div input {
+            width: 60px;
+        }
+    </style>
+    
+</head>
+<body>
+    <h1>Sayısal Loto Oyunu</h1>
+    <p>Aşağıdaki kutucuklara tahminlerinizi giriniz;<br><br></p>
+    <div>
+        <input type="number" name="tahminNumber" id="number1">
+        <input type="number" name="tahminNumber" id="number2">
+        <input type="number" name="tahminNumber" id="number3">
+        <input type="number" name="tahminNumber" id="number4">
+        <input type="number" name="tahminNumber" id="number5">
+        <input type="number" name="tahminNumber" id="number6">
+        <button id="tahminGir" onclick="tahminGir()">Tahmin gir</button>
+    </div>
+    <br>
+    <hr>
+    <button id="kurayiCek" onclick="kurayiCek()" disabled>Kurayı çek</button>
+    <br> <br>
+    <label for="lotoSayilari">Loto Sayıları</label>
+    <br> <br>
+    <div>
+        <input type="number" name="lotoNumber" id="loto1" disabled>
+        <input type="number" name="lotoNumber" id="loto2" disabled>
+        <input type="number" name="lotoNumber" id="loto3" disabled>
+        <input type="number" name="lotoNumber" id="loto4" disabled>
+        <input type="number" name="lotoNumber" id="loto5" disabled>
+        <input type="number" name="lotoNumber" id="loto6" disabled>
+    </div>
+    <br>
+    <label for="bilinenSayilar">Bilinen Sayılar:</label>
+    <div id="bilinenSayilar"></div>
+    <br>
+    <label for="kacAdetBilindi">Kaç Adet Sayı Bilindi:</label>
+    <div id="kacAdetBilindi"></div>
+
+    <script>
+        function tahminGir() {
+            const tahminKutular = document.querySelectorAll('input[name="tahminNumber"]');
+            const tahminSayilari = [];
+            let valid = true; 
+            
+            tahminKutular.forEach(kutu => {
+                const tahmin = parseInt(kutu.value);
+                if (isNaN(tahmin) || tahmin < 1 || tahmin > 49) {
+                    valid = false;
+                    return;
+                }
+                if (tahminSayilari.includes(tahmin)) {
+                    alert("Aynı sayıyı iki kez giremezsiniz.");
+                    kutu.value = '';
+                    return;
+                }
+                tahminSayilari.push(tahmin);
+                kutu.value = '';
+            });
+
+            if (!valid) {
+                alert("Hatalı giriş! Sayılar 1 ile 49 arasında olmalı.");
+                return;
+            }
+
+          
+            const sortedTahminler = tahminSayilari.sort((a, b) => a - b);
+            for (let i = 0; i < sortedTahminler.length; i++) {
+                tahminKutular[i].value = sortedTahminler[i];
+            }
+
+           
+            document.getElementById('tahminGir').setAttribute('disabled', 'true');
+            document.getElementById('kurayiCek').removeAttribute('disabled');
+        }
+
+        function kurayiCek() {
+            const lotoKutular = document.querySelectorAll('input[name="lotoNumber"]');
+            const lotoSayilari = [];
+
+            while (lotoSayilari.length < 6) {
+                const randomSayi = Math.floor(Math.random() * 49) + 1;
+                if (!lotoSayilari.includes(randomSayi)) {
+                    lotoSayilari.push(randomSayi);
+                }
+            }
+
+            const sortedLotoSayilari = lotoSayilari.sort((a, b) => a - b);
+            for (let i = 0; i < sortedLotoSayilari.length; i++) {
+                lotoKutular[i].value = sortedLotoSayilari[i];
+            }
+
+           
+            const tahminKutular = document.querySelectorAll('input[name="tahminNumber"]');
+            let bilinenSayilar = [];
+            for (let i = 0; i < tahminKutular.length; i++) {
+                if (lotoSayilari.includes(parseInt(tahminKutular[i].value))) {
+                    bilinenSayilar.push(parseInt(tahminKutular[i].value));
+                }
+            }
+            document.getElementById('bilinenSayilar').textContent = bilinenSayilar.join(', ');
+            document.getElementById('kacAdetBilindi').textContent = bilinenSayilar.length.toString();
+        }
+    </script>
+
+</body>
+</html>
